@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de Carga LG 19 kg</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            lgred: {
+              50: '#fff1f2',
+              100: '#ffe4e6',
+              500: '#e11d48',
+              600: '#be123c',
+              700: '#9f1239',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    /* Evita spinners nativos incómodos en inputs numéricos móviles cuando se desea un control limpio */
+    input[type="number"].no-spinner::-webkit-inner-spin-button,
+    input[type="number"].no-spinner::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type="number"].no-spinner {
+      -moz-appearance: textfield;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 min-h-screen antialiased selection:bg-rose-100 selection:text-rose-800">
+  <!-- Contenedor principal centrado y adaptable a móvil y escritorio -->
+  <div id="app" class="min-h-screen flex flex-col max-w-xl mx-auto px-3.5 py-4 sm:px-6 sm:py-6 gap-4">
+
+    <!-- Encabezado de marca y modelo -->
+    <header class="bg-white rounded-3xl shadow-sm border border-slate-200/80 p-4 sm:p-5">
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <!-- Insignia estilo LG automática -->
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-600 to-rose-700 text-white flex flex-col items-center justify-center shadow-sm shrink-0">
+            <span class="text-sm font-extrabold tracking-tight leading-none">LG</span>
+            <span class="text-[10px] font-semibold opacity-90 mt-0.5">19 KG</span>
+          </div>
+          <div>
+            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900 leading-snug">
+              Calculadora de Carga LG 19 kg
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
+              Lavadora automática · Lavado y centrifugado en seco
+            </p>
+          </div>
+        </div>
+        <button
+          id="btnResetAll"
+          type="button"
+          class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 active:scale-[0.98] text-slate-700 transition flex items-center gap-1.5 shrink-0"
+          title="Reiniciar cantidades a cero"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span>Reiniciar</span>
+        </button>
+      </div>
+
+      <!-- Configuración rápida de capacidad y recomendación 80% -->
+      <div class="mt-4 pt-3.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2.5 text-xs">
+        <div class="flex items-center gap-2">
+          <span class="text-slate-500 font-medium">Capacidad máxima:</span>
+          <div class="inline-flex items-center bg-slate-100 rounded-xl p-0.5 border border-slate-200/70">
+            <button
+              id="btnCapMinus"
+              type="button"
+              class="w-7 h-7 rounded-lg hover:bg-white active:bg-slate-200 flex items-center justify-center font-bold text-slate-700 transition"
+              aria-label="Reducir capacidad máxima"
+            >−</button>
+            <input
+              id="inputMaxCapacity"
+              type="number"
+              min="5"
+              max="40"
+              step="0.5"
+              value="19"
+              class="no-spinner w-12 text-center font-bold text-slate-900 bg-transparent text-xs focus:outline-none"
+              aria-label="Capacidad máxima en kilogramos"
+            />
+            <button
+              id="btnCapPlus"
+              type="button"
+              class="w-7 h-7 rounded-lg hover:bg-white active:bg-slate-200 flex items-center justify-center font-bold text-slate-700 transition"
+              aria-label="Aumentar capacidad máxima"
+            >+</button>
+          </div>
+          <span class="font-semibold text-slate-600">kg</span>
+          <button
+            id="btnCapDefault19"
+            type="button"
+            class="px-2 py-1 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 font-semibold transition"
+          >
+            19 kg LG
+          </button>
+        </div>
+
+        <div id="optimalBadge" class="px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200/70 font-medium">
+          Óptimo (80%): <strong id="optimalKgText">15.20 kg</strong>
+        </div>
+      </div>
+    </header>
+
+    <!-- Panel principal de monitoreo de carga (Sticky en pantallas compactas si se desea, o limpio arriba) -->
+    <section id="statusCard" class="bg-white rounded-3xl shadow-sm border border-slate-200/80 p-4 sm:p-5 transition-colors duration-200">
+      <div class="flex items-center justify-between gap-2 mb-2">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Peso estimado de la carga</span>
+        <span id="statusBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+          <span id="statusDot" class="w-2 h-2 rounded-full bg-emerald-600"></span>
+          <span id="statusLabel">Carga Segura</span>
+        </span>
+      </div>
+
+      <!-- Peso total grande y porcentaje -->
+      <div class="flex items-baseline justify-between gap-2">
+        <div class="flex items-baseline gap-1.5">
+          <span id="totalWeightDisplay" class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900">0.00</span>
+          <span class="text-base sm:text-lg font-bold text-slate-400">/ <span id="maxCapDisplay">19.0</span> kg</span>
+        </div>
+        <div class="text-right">
+          <span id="percentDisplay" class="text-2xl sm:text-3xl font-extrabold text-slate-800">0%</span>
+          <p class="text-[11px] font-medium text-slate-400">de capacidad</p>
+        </div>
+      </div>
+
+      <!-- Barra de progreso con marca del límite óptimo (80%) y tope (100%) -->
+      <div class="mt-4">
+        <div class="relative w-full h-4 bg-slate-100 rounded-full overflow-hidden border border-slate-200/70">
+          <!-- Marcador visual de carga óptima recomendada (80%) -->
+          <div
+            id="optimalMarker"
+            class="absolute top-0 bottom-0 w-0.5 bg-slate-500/50 z-10 pointer-events-none"
+            style="left: 80%;"
+            title="Recomendación óptima (80%)"
+          ></div>
+          <!-- Relleno dinámico de carga -->
+          <div
+            id="progressBarFill"
+            class="h-full rounded-full bg-emerald-500 transition-all duration-300 ease-out"
+            style="width: 0%;"
+          ></div>
+        </div>
+        <div class="flex justify-between items-center text-[11px] font-medium text-slate-500 mt-1.5">
+          <span>0 kg</span>
+          <span id="optimalScaleLabel">Óptimo ~15.2 kg (80%)</span>
+          <span id="hardLimitScaleLabel" class="font-bold text-slate-700">Límite 19 kg</span>
+        </div>
+      </div>
+
+      <!-- Métricas secundarias: Espacio disponible / Excedente + Total de prendas -->
+      <div class="grid grid-cols-2 gap-2.5 mt-4">
+        <div id="remainingBox" class="rounded-2xl bg-slate-50 border border-slate-200/70 p-3">
+          <p id="remainingTitle" class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Margen disponible</p>
+          <p id="remainingValue" class="text-lg sm:text-xl font-extrabold text-emerald-700 mt-0.5">+19.00 kg</p>
+        </div>
+        <div class="rounded-2xl bg-slate-50 border border-slate-200/70 p-3">
+          <p class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Prendas en carga</p>
+          <p id="totalItemsValue" class="text-lg sm:text-xl font-extrabold text-slate-800 mt-0.5">0 prendas</p>
+        </div>
+      </div>
+
+      <!-- Mensaje contextual para lavado y centrifugado en lavadora automática -->
+      <div id="statusMessageBox" class="mt-3 rounded-2xl p-3 text-xs sm:text-sm leading-relaxed bg-emerald-50/90 text-emerald-900 border border-emerald-200/70">
+        Tu lavadora LG de 19 kg tiene espacio suficiente para lavar y centrifugar sin forzar el motor ni desbalancear la tina.
+      </div>
+
+      <!-- Aviso práctico sobre prendas voluminosas o pesadas (edredones, cobertores y colchas) -->
+      <div id="bulkyNoticeBox" class="mt-2.5 rounded-2xl p-3 text-xs leading-relaxed bg-sky-50/90 text-sky-950 border border-sky-200/80 flex items-start gap-2.5">
+        <svg class="w-4 h-4 text-sky-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p id="bulkyNoticeText">
+          <strong>Prendas voluminosas o pesadas:</strong> Edredones, cobertores y colchas pueden caber por peso en una LG de 19 kg, pero ocupan mucho volumen y retienen agua al centrifugar. Lava preferiblemente 1 pieza voluminosa a la vez (o combínala solo con prendas ligeras) para evitar desbalance o roces en la tina.
+        </p>
+      </div>
+    </section>
+
+    <!-- Selector de categoría y botón para agregar prenda personalizada -->
+    <div class="flex flex-col gap-2 px-0.5">
+      <div class="flex items-center justify-between gap-2">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Categorías</span>
+        <button
+          id="btnOpenAddModal"
+          type="button"
+          class="px-3 py-2 rounded-2xl text-xs font-bold bg-rose-600 hover:bg-rose-700 active:scale-[0.98] text-white shadow-sm transition flex items-center gap-1 shrink-0"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>Nueva prenda</span>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1">
+        <button
+          type="button"
+          data-filter="all"
+          class="filter-btn px-3 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white transition shrink-0"
+        >
+          Todas
+        </button>
+        <button
+          type="button"
+          data-filter="hombre"
+          class="filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition shrink-0"
+        >
+          Hombre
+        </button>
+        <button
+          type="button"
+          data-filter="mujer"
+          class="filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition shrink-0"
+        >
+          Mujer
+        </button>
+        <button
+          type="button"
+          data-filter="basicos"
+          class="filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition shrink-0"
+        >
+          Básicos y Ropa Interior
+        </button>
+        <button
+          type="button"
+          data-filter="hogar"
+          class="filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition shrink-0"
+        >
+          Hogar y Blancos
+        </button>
+        <button
+          type="button"
+          data-filter="extras"
+          class="filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition shrink-0"
+        >
+          Extras Comunes
+        </button>
+        <button
+          type="button"
+          data-filter="custom"
+          class="filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition shrink-0"
+        >
+          Personalizadas
+        </button>
+      </div>
+    </div>
+
+    <!-- Lista de prendas -->
+    <main id="garmentsList" class="space-y-3">
+      <!-- Renderizado dinámico mediante JavaScript -->
+    </main>
+
+    <!-- Nota práctica de cuidado para lavadora automática LG -->
+    <footer class="bg-white/80 rounded-3xl border border-slate-200/80 p-4 text-xs text-slate-500 leading-relaxed mb-4">
+      <p class="font-semibold text-slate-700 mb-1">Consejos para tu LG automática (19 kg):</p>
+      <ul class="list-disc pl-4 space-y-1">
+        <li>La capacidad nominal (19 kg) es el límite máximo en seco; mantenerte cerca del <strong>80% (~15.2 kg)</strong> favorece un mejor enjuague y centrifugado.</li>
+        <li>Las prendas de <strong>mezclilla</strong> y <strong>blancos gruesos</strong> absorben mucha agua y pueden generar desbalance si se sobrecarga la tina.</li>
+        <li>Toca el <strong>peso promedio (g)</strong> de cualquier prenda para ajustarlo a tus prendas reales o agrega prendas personalizadas.</li>
+      </ul>
+    </footer>
+  </div>
+
+  <!-- Modal para agregar una prenda personalizada -->
+  <div id="addGarmentModal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-slate-900/50 backdrop-blur-[2px] p-0 sm:p-4">
+    <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-5 shadow-xl border border-slate-200">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-base font-extrabold text-slate-900">Agregar prenda personalizada</h2>
+        <button id="btnCloseAddModal" type="button" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600">
+          ✕
+        </button>
+      </div>
+
+      <form id="formAddGarment" class="space-y-3.5">
+        <div>
+          <label for="newGarmentName" class="block text-xs font-bold text-slate-700 mb-1">Nombre de la prenda</label>
+          <input
+            id="newGarmentName"
+            type="text"
+            required
+            placeholder="Ej. Bata de baño, Cubrecama ligero, Guantes"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="newGarmentWeightGrams" class="block text-xs font-bold text-slate-700 mb-1">Peso promedio (g)</label>
+            <input
+              id="newGarmentWeightGrams"
+              type="number"
+              required
+              min="10"
+              max="20000"
+              step="5"
+              value="350"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+            />
+          </div>
+          <div>
+            <label for="newGarmentInitialQty" class="block text-xs font-bold text-slate-700 mb-1">Cantidad inicial</label>
+            <input
+              id="newGarmentInitialQty"
+              type="number"
+              min="0"
+              max="100"
+              step="1"
+              value="1"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+            />
+          </div>
+        </div>
+
+        <p id="addFormError" class="hidden text-xs font-semibold text-rose-600"></p>
+
+        <div class="flex gap-2.5 pt-2">
+          <button
+            type="button"
+            id="btnCancelAdd"
+            class="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-700 hover:bg-slate-50 transition"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-sm font-bold text-white shadow-sm transition"
+          >
+            Guardar prenda
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Banner de notificación discreto (sin alert()) -->
+  <div id="toastBanner" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 hidden px-4 py-2.5 rounded-full bg-slate-900 text-white text-xs font-semibold shadow-lg">
+    <span id="toastText"></span>
+  </div>
+
+  <script>
+    /**
+     * Calculadora de Carga LG 19 kg (v2)
+     * Catálogo completo por categorías (Hombre, Mujer, Básicos y Ropa Interior,
+     * Hogar y Blancos, Extras Comunes y Personalizadas) con pesos promedio en gramos (g)
+     * editables, cálculo en kg y porcentaje, umbral óptimo del 80% y límite de 19 kg.
+     */
+    (function () {
+      const STORAGE_KEY = 'lg_19kg_laundry_calc_v2';
+
+      const CATEGORY_META = {
+        hombre: { label: 'Hombre', tag: 'Hombre' },
+        mujer: { label: 'Mujer', tag: 'Mujer' },
+        basicos: { label: 'Básicos y Ropa Interior', tag: 'Básicos' },
+        hogar: { label: 'Hogar y Blancos', tag: 'Hogar' },
+        extras: { label: 'Extras Comunes', tag: 'Extras' },
+        custom: { label: 'Personalizadas', tag: 'Extra' }
+      };
+
+      const BULKY_IDS = new Set(['edredones', 'cobertores', 'colchas']);
+
+      // Catálogo inicial con pesos promedio exactos en gramos (g)
+      const DEFAULT_GARMENTS = [
+        // Categoría Hombre
+        { id: 'h-jeans', name: 'Pantalones de mezclilla de hombre', subtitle: 'Mezclilla pesada · pantalón largo', category: 'hombre', weightGrams: 650, qty: 0, custom: false },
+        { id: 'h-vestir', name: 'Pantalones de vestir de hombre', subtitle: 'Tela formal · corte recto', category: 'hombre', weightGrams: 380, qty: 0, custom: false },
+        { id: 'h-polo', name: 'Playeras polo de hombre', subtitle: 'Piqué algodón · manga corta', category: 'hombre', weightGrams: 240, qty: 0, custom: false },
+        { id: 'h-camisa-vestir', name: 'Camisas de vestir de hombre', subtitle: 'Algodón/popelina · manga larga o corta', category: 'hombre', weightGrams: 220, qty: 0, custom: false },
+        { id: 'h-sueter-liviano', name: 'Suéteres livianos de hombre', subtitle: 'Tejido delgado · punto fino', category: 'hombre', weightGrams: 320, qty: 0, custom: false },
+        { id: 'h-sueter-grueso', name: 'Suéteres gruesos de hombre', subtitle: 'Tejido pesado · invierno', category: 'hombre', weightGrams: 600, qty: 0, custom: false },
+        { id: 'h-short-dep', name: 'Shorts deportivos de hombre', subtitle: 'Poliéster/microfibra · entrenamiento', category: 'hombre', weightGrams: 180, qty: 0, custom: false },
+        { id: 'h-playera-dep', name: 'Playeras deportivas de hombre', subtitle: 'Dry-fit / transpirable', category: 'hombre', weightGrams: 160, qty: 0, custom: false },
+
+        // Categoría Mujer
+        { id: 'm-vestir', name: 'Pantalones de vestir de mujer', subtitle: 'Tela formal · uso diario u oficina', category: 'mujer', weightGrams: 320, qty: 0, custom: false },
+        { id: 'm-jeans', name: 'Pantalones de mezclilla de mujer', subtitle: 'Mezclilla · pantalón largo', category: 'mujer', weightGrams: 550, qty: 0, custom: false },
+        { id: 'm-blusas', name: 'Blusas de mujer', subtitle: 'Tela ligera · uso casual o formal', category: 'mujer', weightGrams: 160, qty: 0, custom: false },
+        { id: 'm-polo', name: 'Playeras tipo polo de mujer', subtitle: 'Piqué algodón · corte femenino', category: 'mujer', weightGrams: 200, qty: 0, custom: false },
+        { id: 'm-short-dep', name: 'Shorts deportivos de mujer', subtitle: 'Deportivo / licra o tela ligera', category: 'mujer', weightGrams: 140, qty: 0, custom: false },
+        { id: 'm-playera-dep', name: 'Playeras deportivas de mujer', subtitle: 'Deportiva ligera · entrenamiento', category: 'mujer', weightGrams: 130, qty: 0, custom: false },
+        { id: 'm-vestido-corto', name: 'Vestidos cortos de mujer', subtitle: 'Largo a la rodilla o arriba', category: 'mujer', weightGrams: 240, qty: 0, custom: false },
+        { id: 'm-vestido-largo', name: 'Vestidos largos de mujer', subtitle: 'Maxi / largo completo', category: 'mujer', weightGrams: 420, qty: 0, custom: false },
+        { id: 'm-falda-corta', name: 'Faldas cortas de mujer', subtitle: 'Corte corto · uso casual', category: 'mujer', weightGrams: 180, qty: 0, custom: false },
+        { id: 'm-falda-larga', name: 'Faldas largas de mujer', subtitle: 'Largo medio o largo completo', category: 'mujer', weightGrams: 320, qty: 0, custom: false },
+        { id: 'm-sudaderas', name: 'Sudaderas de mujer', subtitle: 'Algodón / felpa suave', category: 'mujer', weightGrams: 480, qty: 0, custom: false },
+        { id: 'm-chamarra-gruesa', name: 'Chamarras gruesas de mujer', subtitle: 'Acolchada / invierno', category: 'mujer', weightGrams: 850, qty: 0, custom: false },
+        { id: 'm-chamarra-delgada', name: 'Chamarras delgadas de mujer', subtitle: 'Rompevientos / ligera', category: 'mujer', weightGrams: 360, qty: 0, custom: false },
+
+        // Categoría Básicos y Ropa Interior
+        { id: 'calcetines', name: 'Calcetines (par)', subtitle: 'Par estándar · algodón o mezcla', category: 'basicos', weightGrams: 50, qty: 0, custom: false },
+        { id: 'ropa-int-hombre', name: 'Ropa interior de hombre', subtitle: 'Bóxer / trusa', category: 'basicos', weightGrams: 80, qty: 0, custom: false },
+        { id: 'ropa-int-mujer', name: 'Ropa interior de mujer', subtitle: 'Panty / prenda íntima ligera', category: 'basicos', weightGrams: 50, qty: 0, custom: false },
+
+        // Categoría Hogar y Blancos
+        { id: 'edredones', name: 'Edredones', subtitle: 'Prenda voluminosa · lavar con precaución', category: 'hogar', weightGrams: 2200, qty: 0, custom: false },
+        { id: 'cobertores', name: 'Cobertores', subtitle: 'Prenda pesada y voluminosa', category: 'hogar', weightGrams: 1800, qty: 0, custom: false },
+        { id: 'colchas', name: 'Colchas', subtitle: 'Cubre-cama · volumen medio/alto', category: 'hogar', weightGrams: 1100, qty: 0, custom: false },
+        { id: 'toallas-bano', name: 'Toallas de baño', subtitle: 'Rizo absorbente · tamaño baño', category: 'hogar', weightGrams: 600, qty: 0, custom: false },
+        { id: 'toallas-manos', name: 'Toallas de manos', subtitle: 'Rizo / facial o manos', category: 'hogar', weightGrams: 180, qty: 0, custom: false },
+        { id: 'sabanas-fundas', name: 'Sábanas / fundas (juego)', subtitle: 'Juego de cama ligero/estándar', category: 'hogar', weightGrams: 900, qty: 0, custom: false },
+
+        // Categoría Extras Comunes
+        { id: 'cargo-joggers', name: 'Pantalones cargo / joggers', subtitle: 'Bolsillos laterales o puño elástico', category: 'extras', weightGrams: 450, qty: 0, custom: false },
+        { id: 'hoodie', name: 'Sudaderas con capucha (hoodie)', subtitle: 'Con gorro · felpa o algodón', category: 'extras', weightGrams: 550, qty: 0, custom: false },
+        { id: 'ropa-bebe-infantil', name: 'Ropa de bebé / infantil', subtitle: 'Prenda infantil promedio', category: 'extras', weightGrams: 130, qty: 0, custom: false },
+        { id: 'trapos-jergas', name: 'Trapos / jergas de cocina', subtitle: 'Limpieza de cocina · absorbentes', category: 'extras', weightGrams: 110, qty: 0, custom: false }
+      ];
+
+      let state = {
+        maxCapacityKg: 19,
+        activeFilter: 'all',
+        editingWeightId: null,
+        garments: JSON.parse(JSON.stringify(DEFAULT_GARMENTS))
+      };
+
+      const els = {
+        btnResetAll: document.getElementById('btnResetAll'),
+        btnCapMinus: document.getElementById('btnCapMinus'),
+        btnCapPlus: document.getElementById('btnCapPlus'),
+        btnCapDefault19: document.getElementById('btnCapDefault19'),
+        inputMaxCapacity: document.getElementById('inputMaxCapacity'),
+        optimalKgText: document.getElementById('optimalKgText'),
+        optimalScaleLabel: document.getElementById('optimalScaleLabel'),
+        hardLimitScaleLabel: document.getElementById('hardLimitScaleLabel'),
+        statusBadge: document.getElementById('statusBadge'),
+        statusDot: document.getElementById('statusDot'),
+        statusLabel: document.getElementById('statusLabel'),
+        totalWeightDisplay: document.getElementById('totalWeightDisplay'),
+        maxCapDisplay: document.getElementById('maxCapDisplay'),
+        percentDisplay: document.getElementById('percentDisplay'),
+        progressBarFill: document.getElementById('progressBarFill'),
+        remainingBox: document.getElementById('remainingBox'),
+        remainingTitle: document.getElementById('remainingTitle'),
+        remainingValue: document.getElementById('remainingValue'),
+        totalItemsValue: document.getElementById('totalItemsValue'),
+        statusMessageBox: document.getElementById('statusMessageBox'),
+        bulkyNoticeBox: document.getElementById('bulkyNoticeBox'),
+        bulkyNoticeText: document.getElementById('bulkyNoticeText'),
+        garmentsList: document.getElementById('garmentsList'),
+        filterButtons: document.querySelectorAll('.filter-btn'),
+        btnOpenAddModal: document.getElementById('btnOpenAddModal'),
+        addGarmentModal: document.getElementById('addGarmentModal'),
+        btnCloseAddModal: document.getElementById('btnCloseAddModal'),
+        btnCancelAdd: document.getElementById('btnCancelAdd'),
+        formAddGarment: document.getElementById('formAddGarment'),
+        newGarmentName: document.getElementById('newGarmentName'),
+        newGarmentWeightGrams: document.getElementById('newGarmentWeightGrams'),
+        newGarmentInitialQty: document.getElementById('newGarmentInitialQty'),
+        addFormError: document.getElementById('addFormError'),
+        toastBanner: document.getElementById('toastBanner'),
+        toastText: document.getElementById('toastText')
+      };
+
+      let toastTimer = null;
+
+      function showToast(message) {
+        if (!els.toastBanner || !els.toastText) return;
+        els.toastText.textContent = message;
+        els.toastBanner.classList.remove('hidden');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          els.toastBanner.classList.add('hidden');
+        }, 2400);
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            maxCapacityKg: state.maxCapacityKg,
+            garments: state.garments
+          }));
+        } catch (err) {
+          console.warn('No se pudo guardar en localStorage:', err);
+        }
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+          const parsed = JSON.parse(raw);
+          if (typeof parsed.maxCapacityKg === 'number' && parsed.maxCapacityKg >= 5 && parsed.maxCapacityKg <= 40) {
+            state.maxCapacityKg = Number(parsed.maxCapacityKg.toFixed(1));
+          }
+          if (Array.isArray(parsed.garments) && parsed.garments.length > 0) {
+            state.garments = parsed.garments
+              .filter(g => g && typeof g.id === 'string' && typeof g.name === 'string')
+              .map(g => {
+                const grams = typeof g.weightGrams === 'number'
+                  ? g.weightGrams
+                  : (typeof g.weightKg === 'number' ? Math.round(g.weightKg * 1000) : 250);
+                return {
+                  id: g.id,
+                  name: g.name,
+                  subtitle: typeof g.subtitle === 'string' ? g.subtitle : 'Prenda personalizada',
+                  category: Object.keys(CATEGORY_META).includes(g.category) ? g.category : 'custom',
+                  weightGrams: Math.max(10, Math.min(20000, Math.round(grams || 250))),
+                  qty: Math.max(0, Math.min(999, Math.floor(Number(g.qty) || 0))),
+                  custom: Boolean(g.custom)
+                };
+              });
+          }
+        } catch (err) {
+          console.warn('Error al cargar estado previo:', err);
+        }
+      }
+
+      function getCategoryBadge(garment) {
+        const meta = CATEGORY_META[garment.category] || CATEGORY_META.custom;
+        switch (garment.category) {
+          case 'hombre':
+            return {
+              bg: 'bg-indigo-50 text-indigo-700 border-indigo-200/80',
+              tag: meta.tag,
+              icon: `<svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>`
+            };
+          case 'mujer':
+            return {
+              bg: 'bg-rose-50 text-rose-700 border-rose-200/80',
+              tag: meta.tag,
+              icon: `<svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4a4 4 0 100 8 4 4 0 000-8zm0 8v9m-3-3h6" />
+              </svg>`
+            };
+          case 'basicos':
+            return {
+              bg: 'bg-sky-50 text-sky-700 border-sky-200/80',
+              tag: meta.tag,
+              icon: `<svg class="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>`
+            };
+          case 'hogar':
+            return {
+              bg: 'bg-teal-50 text-teal-800 border-teal-200/80',
+              tag: meta.tag,
+              icon: `<svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>`
+            };
+          case 'extras':
+            return {
+              bg: 'bg-amber-50 text-amber-800 border-amber-200/80',
+              tag: meta.tag,
+              icon: `<svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h10" />
+              </svg>`
+            };
+          default:
+            return {
+              bg: 'bg-purple-50 text-purple-800 border-purple-200/80',
+              tag: meta.tag,
+              icon: `<svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>`
+            };
+        }
+      }
+
+      function computeMetrics() {
+        let totalGrams = 0;
+        let totalItems = 0;
+        let bulkyCount = 0;
+
+        for (const g of state.garments) {
+          const qty = Math.max(0, Number(g.qty) || 0);
+          const grams = Math.max(0, Number(g.weightGrams) || 0);
+          totalItems += qty;
+          totalGrams += qty * grams;
+          if (qty > 0 && BULKY_IDS.has(g.id)) {
+            bulkyCount += qty;
+          }
+        }
+
+        const totalWeight = totalGrams / 1000;
+        const cap = Math.max(1, Number(state.maxCapacityKg) || 19);
+        const optimalWeight = cap * 0.8;
+        const pct = (totalWeight / cap) * 100;
+        const diff = cap - totalWeight;
+
+        let status = 'safe';
+        if (totalWeight > cap) {
+          status = 'over';
+        } else if (pct >= 80) {
+          status = 'near';
+        }
+
+        return {
+          totalGrams,
+          totalWeight,
+          totalItems,
+          bulkyCount,
+          cap,
+          optimalWeight,
+          pct,
+          diff,
+          status
+        };
+      }
+
+      function renderSummary() {
+        const m = computeMetrics();
+
+        els.inputMaxCapacity.value = m.cap;
+        els.maxCapDisplay.textContent = m.cap.toFixed(1);
+        els.optimalKgText.textContent = `${m.optimalWeight.toFixed(2)} kg`;
+        els.optimalScaleLabel.textContent = `Óptimo ~${m.optimalWeight.toFixed(1)} kg (80%)`;
+        els.hardLimitScaleLabel.textContent = `Límite ${m.cap % 1 === 0 ? m.cap.toFixed(0) : m.cap.toFixed(1)} kg`;
+
+        els.totalWeightDisplay.textContent = m.totalWeight.toFixed(2);
+        els.percentDisplay.textContent = `${Math.round(m.pct)}%`;
+        els.totalItemsValue.textContent = `${m.totalItems} ${m.totalItems === 1 ? 'prenda' : 'prendas'}`;
+
+        const barWidth = Math.min(100, Math.max(0, m.pct));
+        els.progressBarFill.style.width = `${barWidth}%`;
+
+        els.statusBadge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold';
+        els.statusDot.className = 'w-2 h-2 rounded-full';
+        els.progressBarFill.className = 'h-full rounded-full transition-all duration-300 ease-out';
+        els.statusMessageBox.className = 'mt-3 rounded-2xl p-3 text-xs sm:text-sm leading-relaxed border';
+        els.remainingBox.className = 'rounded-2xl border p-3 transition-colors';
+
+        if (m.status === 'safe') {
+          els.statusBadge.classList.add('bg-emerald-100', 'text-emerald-800');
+          els.statusDot.classList.add('bg-emerald-600');
+          els.progressBarFill.classList.add('bg-emerald-500');
+          els.percentDisplay.className = 'text-2xl sm:text-3xl font-extrabold text-emerald-700';
+
+          els.remainingBox.classList.add('bg-slate-50', 'border-slate-200/70');
+          els.remainingTitle.textContent = 'Margen disponible';
+          els.remainingValue.className = 'text-lg sm:text-xl font-extrabold text-emerald-700 mt-0.5';
+          els.remainingValue.textContent = `+${m.diff.toFixed(2)} kg`;
+
+          if (m.totalItems === 0) {
+            els.statusLabel.textContent = 'Lista para cargar';
+            els.statusMessageBox.classList.add('bg-slate-50', 'text-slate-700', 'border-slate-200/80');
+            els.statusMessageBox.textContent = `Selecciona tus prendas por categoría para calcular el peso total en tu lavadora LG de ${m.cap} kg.`;
+          } else {
+            els.statusLabel.textContent = 'Carga Segura';
+            els.statusMessageBox.classList.add('bg-emerald-50/90', 'text-emerald-950', 'border-emerald-200/80');
+            els.statusMessageBox.textContent = `Carga segura para lavado y centrifugado (${m.totalGrams.toLocaleString('es-MX')} g). Te quedan ${m.diff.toFixed(2)} kg libres antes del tope de ${m.cap} kg.`;
+          }
+        } else if (m.status === 'near') {
+          els.statusBadge.classList.add('bg-amber-100', 'text-amber-900');
+          els.statusDot.classList.add('bg-amber-500');
+          els.progressBarFill.classList.add('bg-amber-500');
+          els.percentDisplay.className = 'text-2xl sm:text-3xl font-extrabold text-amber-600';
+
+          els.remainingBox.classList.add('bg-amber-50/70', 'border-amber-200/80');
+          els.remainingTitle.textContent = 'Margen restante';
+          els.remainingValue.className = 'text-lg sm:text-xl font-extrabold text-amber-700 mt-0.5';
+          els.remainingValue.textContent = `+${Math.max(0, m.diff).toFixed(2)} kg`;
+
+          els.statusLabel.textContent = 'Cerca del Límite';
+          els.statusMessageBox.classList.add('bg-amber-50', 'text-amber-950', 'border-amber-200');
+          els.statusMessageBox.textContent = `Carga alta (${Math.round(m.pct)}% de ${m.cap} kg). Evita agregar prendas pesadas de mezclilla o blancos para un centrifugado estable.`;
+        } else {
+          const excess = Math.abs(m.diff);
+          els.statusBadge.classList.add('bg-rose-100', 'text-rose-800');
+          els.statusDot.classList.add('bg-rose-600');
+          els.progressBarFill.classList.add('bg-rose-600');
+          els.percentDisplay.className = 'text-2xl sm:text-3xl font-extrabold text-rose-600';
+
+          els.remainingBox.classList.add('bg-rose-50', 'border-rose-200');
+          els.remainingTitle.textContent = 'Exceso sobre límite';
+          els.remainingValue.className = 'text-lg sm:text-xl font-extrabold text-rose-700 mt-0.5';
+          els.remainingValue.textContent = `-${excess.toFixed(2)} kg`;
+
+          els.statusLabel.textContent = 'Sobrecargada';
+          els.statusMessageBox.classList.add('bg-rose-50', 'text-rose-950', 'border-rose-200');
+          els.statusMessageBox.textContent = `¡Sobrecarga de ${excess.toFixed(2)} kg! Reduce prendas antes de iniciar el ciclo para proteger el motor y la suspensión de tu LG.`;
+        }
+
+        // Resalta el aviso de prendas voluminosas si hay edredones, cobertores o colchas seleccionados
+        if (m.bulkyCount > 0) {
+          els.bulkyNoticeBox.className = 'mt-2.5 rounded-2xl p-3 text-xs leading-relaxed bg-amber-50 text-amber-950 border border-amber-300 flex items-start gap-2.5';
+          els.bulkyNoticeText.innerHTML = `<strong>Detectaste ${m.bulkyCount} ${m.bulkyCount === 1 ? 'prenda voluminosa/pesada' : 'prendas voluminosas/pesadas'}:</strong> Aunque el peso total sume ${m.totalWeight.toFixed(2)} kg, los edredones, cobertores y colchas ocupan mucho espacio y retienen agua. Lava 1 pieza grande por ciclo si notas que no circula bien o vibra al centrifugar.`;
+        } else {
+          els.bulkyNoticeBox.className = 'mt-2.5 rounded-2xl p-3 text-xs leading-relaxed bg-sky-50/90 text-sky-950 border border-sky-200/80 flex items-start gap-2.5';
+          els.bulkyNoticeText.innerHTML = `<strong>Prendas voluminosas o pesadas:</strong> Edredones, cobertores y colchas pueden caber por peso en una LG de 19 kg, pero ocupan mucho volumen y retienen agua al centrifugar. Lava preferiblemente 1 pieza voluminosa a la vez (o combínala solo con prendas ligeras) para evitar desbalance.`;
+        }
+      }
+
+      function renderGarmentCard(g) {
+        const badge = getCategoryBadge(g);
+        const subtotalGrams = g.qty * g.weightGrams;
+        const subtotalKg = (subtotalGrams / 1000).toFixed(2);
+        const isEditingWeight = state.editingWeightId === g.id;
+        const hasQty = g.qty > 0;
+
+        return `
+          <article
+            data-id="${g.id}"
+            class="bg-white rounded-3xl border ${hasQty ? 'border-slate-300 shadow-sm' : 'border-slate-200/80'} p-3.5 sm:p-4 transition"
+          >
+            <div class="flex items-start justify-between gap-2.5">
+              <div class="flex items-start gap-3 min-w-0">
+                <div class="w-11 h-11 rounded-2xl border ${badge.bg} flex items-center justify-center shrink-0 mt-0.5">
+                  ${badge.icon}
+                </div>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <h3 class="text-sm sm:text-base font-bold text-slate-900 leading-snug">${escapeHtml(g.name)}</h3>
+                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide border ${badge.bg}">
+                      ${badge.tag}
+                    </span>
+                  </div>
+                  <p class="text-xs text-slate-500 mt-0.5">${escapeHtml(g.subtitle)}</p>
+
+                  <!-- Peso unitario editable en gramos -->
+                  <div class="mt-2 flex items-center gap-2 flex-wrap">
+                    ${
+                      isEditingWeight
+                        ? `
+                          <div class="inline-flex items-center gap-1.5 bg-slate-100 px-2 py-1 rounded-xl border border-slate-300">
+                            <span class="text-[11px] font-semibold text-slate-600">Peso c/u:</span>
+                            <input
+                              type="number"
+                              step="5"
+                              min="10"
+                              max="20000"
+                              value="${g.weightGrams}"
+                              data-weight-input="${g.id}"
+                              class="w-20 px-1.5 py-0.5 text-xs font-bold bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500"
+                            />
+                            <span class="text-[11px] font-semibold text-slate-600">g</span>
+                            <button
+                              type="button"
+                              data-save-weight="${g.id}"
+                              class="px-2 py-0.5 rounded-md bg-slate-900 text-white text-[11px] font-bold hover:bg-slate-800"
+                            >OK</button>
+                          </div>
+                        `
+                        : `
+                          <button
+                            type="button"
+                            data-edit-weight="${g.id}"
+                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-semibold text-slate-700 transition"
+                            title="Toca para editar el peso promedio en gramos"
+                          >
+                            <span>~${g.weightGrams} g c/u</span>
+                            <svg class="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                          </button>
+                        `
+                    }
+
+                    <span data-subtotal-id="${g.id}" class="text-xs font-bold ${hasQty ? 'text-slate-800' : 'text-slate-400'}">
+                      Subtotal: ${subtotalKg} kg (${subtotalGrams.toLocaleString('es-MX')} g)
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              ${
+                g.custom
+                  ? `
+                    <button
+                      type="button"
+                      data-delete-garment="${g.id}"
+                      class="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition shrink-0"
+                      title="Eliminar prenda personalizada"
+                      aria-label="Eliminar prenda personalizada"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  `
+                  : ''
+              }
+            </div>
+
+            <!-- Controles táctiles de cantidad (-, entrada directa, +) -->
+            <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+              <span class="text-xs font-medium text-slate-500">Cantidad:</span>
+              <div class="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  data-qty-minus="${g.id}"
+                  class="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 font-extrabold text-lg flex items-center justify-center transition select-none"
+                  aria-label="Restar ${escapeHtml(g.name)}"
+                >−</button>
+
+                <input
+                  type="number"
+                  min="0"
+                  max="999"
+                  step="1"
+                  value="${g.qty}"
+                  data-qty-input="${g.id}"
+                  aria-label="Cantidad de ${escapeHtml(g.name)}"
+                  class="no-spinner w-14 h-10 rounded-2xl border border-slate-300 bg-slate-50 focus:bg-white text-center text-base font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                />
+
+                <button
+                  type="button"
+                  data-qty-plus="${g.id}"
+                  class="w-10 h-10 rounded-2xl bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-extrabold text-lg flex items-center justify-center shadow-sm transition select-none"
+                  aria-label="Sumar ${escapeHtml(g.name)}"
+                >+</button>
+              </div>
+            </div>
+          </article>
+        `;
+      }
+
+      function renderGarments() {
+        els.filterButtons.forEach(btn => {
+          const isSelected = btn.dataset.filter === state.activeFilter;
+          btn.className = isSelected
+            ? 'filter-btn px-3 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white transition shrink-0'
+            : 'filter-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition shrink-0';
+        });
+
+        const filtered = state.garments.filter(g => {
+          if (state.activeFilter === 'all') return true;
+          return g.category === state.activeFilter;
+        });
+
+        if (filtered.length === 0) {
+          els.garmentsList.innerHTML = `
+            <div class="bg-white rounded-3xl border border-slate-200/80 p-6 text-center">
+              <p class="text-sm font-semibold text-slate-700">No hay prendas en esta categoría</p>
+              <p class="text-xs text-slate-500 mt-1">Cambia de pestaña o pulsa "Nueva prenda" para añadir una personalizada.</p>
+            </div>
+          `;
+          return;
+        }
+
+        if (state.activeFilter === 'all') {
+          const orderedCategories = ['hombre', 'mujer', 'basicos', 'hogar', 'extras', 'custom'];
+          let html = '';
+
+          for (const cat of orderedCategories) {
+            const itemsInCat = filtered.filter(g => g.category === cat);
+            if (itemsInCat.length === 0) continue;
+            const catGrams = itemsInCat.reduce((acc, item) => acc + item.qty * item.weightGrams, 0);
+            const catCount = itemsInCat.reduce((acc, item) => acc + item.qty, 0);
+
+            html += `
+              <section class="space-y-2.5 pt-1">
+                <div class="flex items-center justify-between px-1">
+                  <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-600">${escapeHtml(CATEGORY_META[cat].label)}</h2>
+                  <span class="text-[11px] font-semibold text-slate-400">
+                    ${catCount > 0 ? `${catCount} u. · ${(catGrams / 1000).toFixed(2)} kg` : `${itemsInCat.length} tipos`}
+                  </span>
+                </div>
+                <div class="space-y-2.5">
+                  ${itemsInCat.map(renderGarmentCard).join('')}
+                </div>
+              </section>
+            `;
+          }
+
+          els.garmentsList.innerHTML = html;
+        } else {
+          els.garmentsList.innerHTML = filtered.map(renderGarmentCard).join('');
+        }
+
+        if (state.editingWeightId) {
+          const inputEl = els.garmentsList.querySelector(`[data-weight-input="${state.editingWeightId}"]`);
+          if (inputEl) {
+            inputEl.focus();
+            inputEl.select();
+          }
+        }
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function renderAll() {
+        renderSummary();
+        renderGarments();
+      }
+
+      function changeGarmentQty(id, delta) {
+        const g = state.garments.find(item => item.id === id);
+        if (!g) return;
+        const nextQty = Math.max(0, Math.min(999, (Number(g.qty) || 0) + delta));
+        if (nextQty === g.qty) return;
+        g.qty = nextQty;
+        saveState();
+        renderAll();
+      }
+
+      function setGarmentQty(id, rawValue) {
+        const g = state.garments.find(item => item.id === id);
+        if (!g) return;
+        const parsed = parseInt(rawValue, 10);
+        g.qty = Number.isNaN(parsed) ? 0 : Math.max(0, Math.min(999, parsed));
+        saveState();
+        renderSummary();
+
+        const subtotalEl = els.garmentsList.querySelector(`[data-subtotal-id="${id}"]`);
+        if (subtotalEl) {
+          const subGrams = g.qty * g.weightGrams;
+          subtotalEl.textContent = `Subtotal: ${(subGrams / 1000).toFixed(2)} kg (${subGrams.toLocaleString('es-MX')} g)`;
+          subtotalEl.className = `text-xs font-bold ${g.qty > 0 ? 'text-slate-800' : 'text-slate-400'}`;
+        }
+      }
+
+      function saveGarmentWeight(id) {
+        const g = state.garments.find(item => item.id === id);
+        if (!g) return;
+        const inputEl = els.garmentsList.querySelector(`[data-weight-input="${id}"]`);
+        if (!inputEl) return;
+        const grams = parseFloat(inputEl.value);
+        if (Number.isNaN(grams) || grams < 10 || grams > 20000) {
+          showToast('Ingresa un peso válido entre 10 g y 20,000 g.');
+          return;
+        }
+        g.weightGrams = Math.round(grams);
+        state.editingWeightId = null;
+        saveState();
+        renderAll();
+        showToast(`Peso actualizado a ${g.weightGrams} g`);
+      }
+
+      function updateMaxCapacity(nextCap) {
+        const num = parseFloat(nextCap);
+        if (Number.isNaN(num)) return;
+        state.maxCapacityKg = Math.max(5, Math.min(40, Number(num.toFixed(1))));
+        saveState();
+        renderSummary();
+      }
+
+      els.btnResetAll.addEventListener('click', () => {
+        state.garments.forEach(g => {
+          g.qty = 0;
+        });
+        state.editingWeightId = null;
+        saveState();
+        renderAll();
+        showToast('Cantidades reiniciadas a 0');
+      });
+
+      els.btnCapMinus.addEventListener('click', () => {
+        updateMaxCapacity(state.maxCapacityKg - 0.5);
+      });
+
+      els.btnCapPlus.addEventListener('click', () => {
+        updateMaxCapacity(state.maxCapacityKg + 0.5);
+      });
+
+      els.btnCapDefault19.addEventListener('click', () => {
+        updateMaxCapacity(19);
+        showToast('Capacidad ajustada a 19 kg (LG)');
+      });
+
+      els.inputMaxCapacity.addEventListener('change', (e) => {
+        updateMaxCapacity(e.target.value);
+      });
+
+      els.filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.activeFilter = btn.dataset.filter;
+          state.editingWeightId = null;
+          renderGarments();
+        });
+      });
+
+      els.garmentsList.addEventListener('click', (e) => {
+        const minusBtn = e.target.closest('[data-qty-minus]');
+        if (minusBtn) {
+          changeGarmentQty(minusBtn.dataset.qtyMinus, -1);
+          return;
+        }
+
+        const plusBtn = e.target.closest('[data-qty-plus]');
+        if (plusBtn) {
+          changeGarmentQty(plusBtn.dataset.qtyPlus, 1);
+          return;
+        }
+
+        const editWeightBtn = e.target.closest('[data-edit-weight]');
+        if (editWeightBtn) {
+          state.editingWeightId = editWeightBtn.dataset.editWeight;
+          renderGarments();
+          return;
+        }
+
+        const saveWeightBtn = e.target.closest('[data-save-weight]');
+        if (saveWeightBtn) {
+          saveGarmentWeight(saveWeightBtn.dataset.saveWeight);
+          return;
+        }
+
+        const deleteBtn = e.target.closest('[data-delete-garment]');
+        if (deleteBtn) {
+          const id = deleteBtn.dataset.deleteGarment;
+          state.garments = state.garments.filter(item => item.id !== id);
+          if (state.editingWeightId === id) state.editingWeightId = null;
+          saveState();
+          renderAll();
+          showToast('Prenda eliminada');
+        }
+      });
+
+      els.garmentsList.addEventListener('input', (e) => {
+        const qtyInput = e.target.closest('[data-qty-input]');
+        if (qtyInput) {
+          setGarmentQty(qtyInput.dataset.qtyInput, qtyInput.value);
+        }
+      });
+
+      els.garmentsList.addEventListener('keydown', (e) => {
+        const weightInput = e.target.closest('[data-weight-input]');
+        if (weightInput && e.key === 'Enter') {
+          e.preventDefault();
+          saveGarmentWeight(weightInput.dataset.weightInput);
+        }
+      });
+
+      function openAddModal() {
+        els.addFormError.classList.add('hidden');
+        els.addFormError.textContent = '';
+        els.newGarmentName.value = '';
+        els.newGarmentWeightGrams.value = '350';
+        els.newGarmentInitialQty.value = '1';
+        els.addGarmentModal.classList.remove('hidden');
+        els.addGarmentModal.classList.add('flex');
+        setTimeout(() => els.newGarmentName.focus(), 50);
+      }
+
+      function closeAddModal() {
+        els.addGarmentModal.classList.add('hidden');
+        els.addGarmentModal.classList.remove('flex');
+      }
+
+      els.btnOpenAddModal.addEventListener('click', openAddModal);
+      els.btnCloseAddModal.addEventListener('click', closeAddModal);
+      els.btnCancelAdd.addEventListener('click', closeAddModal);
+
+      els.addGarmentModal.addEventListener('click', (e) => {
+        if (e.target === els.addGarmentModal) {
+          closeAddModal();
+        }
+      });
+
+      els.formAddGarment.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = els.newGarmentName.value.trim();
+        const grams = parseFloat(els.newGarmentWeightGrams.value);
+        const qty = parseInt(els.newGarmentInitialQty.value, 10);
+
+        if (!name) {
+          els.addFormError.textContent = 'Escribe un nombre para la prenda.';
+          els.addFormError.classList.remove('hidden');
+          return;
+        }
+        if (Number.isNaN(grams) || grams < 10 || grams > 20000) {
+          els.addFormError.textContent = 'El peso promedio debe estar entre 10 g y 20,000 g.';
+          els.addFormError.classList.remove('hidden');
+          return;
+        }
+
+        const safeQty = Number.isNaN(qty) ? 0 : Math.max(0, Math.min(999, qty));
+        const newItem = {
+          id: `custom-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          name,
+          subtitle: 'Prenda personalizada',
+          category: 'custom',
+          weightGrams: Math.round(grams),
+          qty: safeQty,
+          custom: true
+        };
+
+        state.garments.push(newItem);
+        saveState();
+        closeAddModal();
+        renderAll();
+        showToast(`"${name}" agregada`);
+      });
+
+      loadState();
+      renderAll();
+    })();
+  </script>
+</body>
+</html>
